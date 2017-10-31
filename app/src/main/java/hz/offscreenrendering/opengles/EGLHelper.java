@@ -1,5 +1,6 @@
 package hz.offscreenrendering.opengles;
 
+import android.opengl.EGL14;
 import android.util.Log;
 
 import javax.microedition.khronos.egl.EGL10;
@@ -38,11 +39,11 @@ public class EGLHelper {
                 EGL10.EGL_RED_SIZE,   8,
                 EGL10.EGL_GREEN_SIZE, 8,
                 EGL10.EGL_BLUE_SIZE,  8,
-                /*EGL10.EGL_ALPHA_SIZE, 8,// if you need the alpha channel
-                EGL10.EGL_DEPTH_SIZE, 8,// if you need the depth buffer
-                EGL10.EGL_RENDERABLE_TYPE, 4,*/
+                EGL10.EGL_ALPHA_SIZE, 8,// if you need the alpha channel
+                EGL10.EGL_RENDERABLE_TYPE, EGL14.EGL_OPENGL_ES2_BIT,
                 EGL10.EGL_SURFACE_TYPE,
                 EGL10.EGL_WINDOW_BIT,
+                EGL10.EGL_DEPTH_SIZE, 16,// if you need the depth buffer
                 EGL10.EGL_NONE
         };
         EGLConfig[] configs = new EGLConfig[1];
@@ -50,15 +51,15 @@ public class EGLHelper {
         mEgl.eglChooseConfig(mEglDisplay, attributes, configs, 1, num_config);
 
         mEglSurface = mEgl.eglCreateWindowSurface(mEglDisplay, configs[0], mSurfaceView.mHolder, null);
-        if (mEgl.eglGetError() != EGL10.EGL_SUCCESS) {
-            Log.d("ddd", "initEGLContext: ");
-        }
         int[] contextAttr = new int[] {
-                EGL10.EGL_VERSION, 2,
+                EGL14.EGL_CONTEXT_CLIENT_VERSION, 2,
                 EGL10.EGL_NONE
         };
         mEglContext = mEgl.eglCreateContext(mEglDisplay, configs[0], EGL10.EGL_NO_CONTEXT, contextAttr);
 
+        if (mEgl.eglGetError() != EGL10.EGL_SUCCESS) {
+            Log.d("ddd", "initEGLContext: ");
+        }
         mEgl.eglMakeCurrent(mEglDisplay, mEglSurface, mEglSurface, mEglContext);
     }
 
